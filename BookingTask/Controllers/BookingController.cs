@@ -27,14 +27,14 @@ namespace BookingTask.Controllers
         [HttpPost]
         public async Task<ActionResult> BookDesk([FromBody] AddBookingDto bookingDto)
         {
-            int id = await _bookingService.Book(bookingDto);
-            return Created($"api/bookings/{id}", null);
+            var bookings = await _bookingService.Book(bookingDto);
+            return new ObjectResult(bookings) { StatusCode = StatusCodes.Status201Created };
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> ChangeDesk([FromRoute] int id, [FromBody] ChangeDeskDto changeDeskDto)
+        public async Task<ActionResult> ChangeDesk([FromRoute] int id, [FromQuery] int deskId)
         {
-            await _bookingService.Change(id, changeDeskDto);
+            await _bookingService.Change(id, deskId);
             return NoContent();
         }
     }
