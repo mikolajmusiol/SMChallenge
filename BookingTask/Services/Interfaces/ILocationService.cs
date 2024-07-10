@@ -5,5 +5,6 @@ namespace BookingTask.Services.Interfaces
     public interface ILocationService
     {
         Task<int> Add(AddLocationDto locationDto);
+        Task Delete(int id);
     }
 }

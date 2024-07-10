@@ -3,6 +3,8 @@ using BookingTask.Services.Interfaces;
 using DeskBooking.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace BookingTask.Controllers
 {
@@ -22,6 +24,13 @@ namespace BookingTask.Controllers
         {
             int id = await _locationService.Add(locationDto);
             return Created($"api/locations/{id}", null);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteLocation([FromRoute] int id)
+        {
+            await _locationService.Delete(id);
+            return NoContent();
         }
     }
 }

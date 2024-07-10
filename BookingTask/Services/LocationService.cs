@@ -2,6 +2,7 @@
 using BookingTask.Models.DTOs;
 using BookingTask.Services.Interfaces;
 using DeskBooking.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookingTask.Services
 {
@@ -22,6 +23,17 @@ namespace BookingTask.Services
             await _dbContext.Locations.AddAsync(location);
             await _dbContext.SaveChangesAsync();
             return location.Id;
+        }
+
+        public async Task Delete(int id)
+        {
+            var location = await _dbContext.Locations.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (location is not null)
+            {
+                _dbContext.Locations.Remove(location);
+                await _dbContext.SaveChangesAsync();
+            }
         }
     }
 }
