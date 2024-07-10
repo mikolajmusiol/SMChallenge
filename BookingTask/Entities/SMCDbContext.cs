@@ -23,7 +23,7 @@ namespace DeskBooking.Entities
 
             modelBuilder.Entity<Booking>()
                 .HasOne(x => x.Desk)
-                .WithOne()
+                .WithOne(x => x.Booking)
                 .HasForeignKey<Desk>("BookingId");
 
             modelBuilder.Entity<Location>()

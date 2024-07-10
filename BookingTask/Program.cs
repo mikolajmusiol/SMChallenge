@@ -1,3 +1,4 @@
+using BookingTask.Middleware;
 using BookingTask.Services;
 using BookingTask.Services.Interfaces;
 using DeskBooking;
@@ -14,6 +15,9 @@ builder.Services.AddDbContext<SMCDbContext>(options => options.UseSqlServer(buil
 builder.Services.AddScoped<Seeder>();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddScoped<ILocationService, LocationService>();
+builder.Services.AddScoped<IDeskService, DeskService>();
+
+builder.Services.AddScoped<ErrorHandlingMiddleware>();
 
 
 builder.Services.AddEndpointsApiExplorer();
@@ -24,6 +28,7 @@ var app = builder.Build();
 var scope = app.Services.CreateScope();
 var seeder = scope.ServiceProvider.GetRequiredService<Seeder>();
 await seeder.Seed();
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
