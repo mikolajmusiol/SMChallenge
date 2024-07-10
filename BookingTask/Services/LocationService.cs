@@ -29,7 +29,7 @@ namespace BookingTask.Services
         {
             var location = await _dbContext.Locations.FirstOrDefaultAsync(x => x.Id == id);
 
-            if (location is not null)
+            if (location is not null && !location.Desks.Any())
             {
                 _dbContext.Locations.Remove(location);
                 await _dbContext.SaveChangesAsync();

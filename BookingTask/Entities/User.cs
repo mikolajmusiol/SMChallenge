@@ -9,6 +9,6 @@ namespace DeskBooking.Entities
 
         public Role Role { get; set; }
 
-        public List<Booking> Bookings { get; set; }
+        public List<Booking> Bookings { get; set; } = new List<Booking>();
     }
 }
