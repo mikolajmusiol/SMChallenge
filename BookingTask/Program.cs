@@ -1,3 +1,5 @@
+using BookingTask.Services;
+using BookingTask.Services.Interfaces;
 using DeskBooking;
 using DeskBooking.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +12,9 @@ builder.Services.AddControllers();
 
 builder.Services.AddDbContext<SMCDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnString")));
 builder.Services.AddScoped<Seeder>();
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+builder.Services.AddScoped<ILocationService, LocationService>();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
