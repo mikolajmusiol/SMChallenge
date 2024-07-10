@@ -16,6 +16,7 @@ builder.Services.AddScoped<Seeder>();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddScoped<ILocationService, LocationService>();
 builder.Services.AddScoped<IDeskService, DeskService>();
+builder.Services.AddScoped<IBookingService, BookingService>();
 
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 
