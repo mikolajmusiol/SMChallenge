@@ -60,7 +60,7 @@ namespace BookingTask.Services
                 throw new NotFoundException("Couldn't find");
 
 
-            if (!desk.IsAvailable || BookingsOverlap(desk.Bookings, bookingDto.DaysOfReservation))
+            if (BookingsOverlap(desk.Bookings, bookingDto.DaysOfReservation))
                 throw new BadRequestException("This desk is already booked");
 
             desk.IsAvailable = false;

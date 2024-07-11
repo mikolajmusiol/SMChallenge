@@ -66,8 +66,19 @@ builder.Services.AddScoped<IValidator<AddLocationDto>, AddLocationDtoValidator>(
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontEndClient", b =>
+    {
+        b.AllowAnyMethod()
+            .AllowAnyHeader()
+            .WithOrigins(builder.Configuration["AllowedOrigins"]);
+    });
+});
+
 var app = builder.Build();
 
+app.UseCors("FrontEndClient");
 var scope = app.Services.CreateScope();
 var seeder = scope.ServiceProvider.GetRequiredService<Seeder>();
 await seeder.Seed();
