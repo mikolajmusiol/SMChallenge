@@ -29,8 +29,8 @@ namespace BookingTask.Controllers
         [HttpPost]
         public async Task<ActionResult> BookDesk([FromBody] AddBookingDto bookingDto)
         {
-            var bookings = await _bookingService.Book(bookingDto);
-            return new ObjectResult(bookings) { StatusCode = StatusCodes.Status201Created };
+            await _bookingService.Book(bookingDto);
+            return Ok();
         }
 
         [HttpPut("{id}")]

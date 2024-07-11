@@ -1,4 +1,5 @@
 ﻿using DeskBooking.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace DeskBooking
@@ -6,10 +7,12 @@ namespace DeskBooking
     public class Seeder
     {
         private readonly SMCDbContext _dbContext;
+        private readonly IPasswordHasher<User> _passwordHasher;
 
-        public Seeder(SMCDbContext dbContext)
+        public Seeder(SMCDbContext dbContext, IPasswordHasher<User> passwordHasher)
         {
             _dbContext = dbContext;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task Seed()
@@ -18,35 +21,24 @@ namespace DeskBooking
             {
                 if (!await _dbContext.Users.AnyAsync())
                 {
-                    var users = GetUsers();
-                    await _dbContext.Users.AddRangeAsync(users);
+                    var admin = SeedAdmin();
+                    await _dbContext.Users.AddAsync(admin);
                     await _dbContext.SaveChangesAsync();
                 }
             }
         }
 
-        private IEnumerable<User> GetUsers()
+        private User SeedAdmin()
         {
-            var users = new List<User>()
+            var admin = new User()
             {
-                new User()
-                {
-                    Name = "Admin",
-                    Role = Role.Admin
-                },
-                new User()
-                {
-                    Name = "Employee1",
-                    Role = Role.Employee
-                },
-                new User()
-                {
-                    Name = "Employee2",
-                    Role = Role.Employee
-                }
+                Name = "admin",
+                Role = Role.Admin
             };
 
-            return users;
+            admin.PasswordHash = _passwordHasher.HashPassword(admin, "admin");
+
+            return admin;
         }
     }
 }

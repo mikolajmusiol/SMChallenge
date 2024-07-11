@@ -12,37 +12,55 @@ namespace BookingTask.Services
     {
         private readonly SMCDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly IUserContextService _userContextService;
 
-        public BookingService(SMCDbContext dbContext, IMapper mapper)
+        public BookingService(SMCDbContext dbContext, IMapper mapper, IUserContextService userContextService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _userContextService = userContextService;
         }
 
         public async Task<IEnumerable<BookingDto>> GetBookings()
         {
             var bookings = await _dbContext.Bookings
                 .Include(x => x.Desk)
+                .Include(x => x.Desk.Location)
                 .Include(x => x.User)
                 .ToListAsync();
-            //displayed data based on a role - to be finished
-            var bookingsDtos = _mapper.Map<List<BookingDto>>(bookings);
+            
+            var bookingsDtos = new List<BookingDto>();
+
+            if (_userContextService.User.IsInRole("Admin"))
+            {
+                bookingsDtos = _mapper.Map<List<BookingDto>>(bookings);
+            }
+            else
+            {
+                foreach (var booking in bookings)
+                {
+                    bookingsDtos.Add(new BookingDto() { DeskId = booking.Desk.Id, BookedDay = booking.BookedDay});
+                }
+            }
+
             return bookingsDtos;
         }
 
-        public async Task<List<Booking>> Book(AddBookingDto bookingDto)
+        public async Task Book(AddBookingDto bookingDto)
         {
             if (!DateTimeChecking.AreDatesWithinAWeek(bookingDto.DaysOfReservation))
                 throw new BadRequestException("Reservation can't exceed a week");
 
             var bookings = new List<Booking>();
             var desk = await GetDeskById(bookingDto.DeskId);
-            var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == 1); //user context id
+            var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == _userContextService.GetUserId);
 
             if (desk is null || user is null)
-            {
                 throw new NotFoundException("Couldn't find");
-            }
+
+
+            if (!desk.IsAvailable && bookingDto.DaysOfReservation.Contains(desk.Booking.BookedDay))
+                throw new BadRequestException("This desk is already booked");
 
             desk.IsAvailable = false;
 
@@ -54,7 +72,6 @@ namespace BookingTask.Services
             }
 
             await _dbContext.SaveChangesAsync();
-            return bookings;
         }
 
         public async Task Change(int bookingId, int deskId)
