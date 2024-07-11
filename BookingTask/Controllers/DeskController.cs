@@ -20,9 +20,9 @@ namespace BookingTask.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin,Employee")]
-        public async Task<ActionResult<IEnumerable<DeskDto>>> GetDesks([FromQuery]string? location)
+        public async Task<ActionResult<IEnumerable<DeskDto>>> GetDesks([FromQuery]string? location, [FromQuery]DateTime? date)
         {
-            var desksDtos = await _deskService.GetDesks(location);
+            var desksDtos = await _deskService.GetDesks(location, date);
             return Ok(desksDtos);
         }
 

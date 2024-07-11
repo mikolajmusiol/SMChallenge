@@ -20,16 +20,25 @@ namespace BookingTask.Services
             _logger = logger;
         }
 
-        public async Task<IEnumerable<DeskDto>> GetDesks(string? location)
+        public async Task<IEnumerable<DeskDto>> GetDesks(string? location, DateTime? date)
         {
             var desks = await _dbContext.Desks
                 .Include(x => x.Location)
-                .Where(
-                    x => location == null || 
+                .Include(x => x.Bookings)
+                .ToListAsync();
+
+            if (date is not null)
+                desks = desks.Where(x => x.Bookings.Any(d => d.BookedDay.Date == date.Value.Date)).ToList();
+
+            if (location is not null)
+            {
+                desks = desks.Where(
+                    x => location == null ||
                     x.Location.Country.ToLower().Contains(location.ToLower()) ||
                     x.Location.City.ToLower().Contains(location.ToLower()) ||
-                    x.Location.Street.ToLower().Contains(location.ToLower())) 
-                    .ToListAsync();
+                    x.Location.Street.ToLower().Contains(location.ToLower()))
+                    .ToList(); 
+            }
 
             var desksDtos = _mapper.Map<List<DeskDto>>(desks);
             return desksDtos;
