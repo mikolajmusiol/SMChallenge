@@ -21,7 +21,6 @@ namespace BookingTask.Services
         public async Task<IEnumerable<DeskDto>> GetDesks(string? location)
         {
             var desks = await _dbContext.Desks
-                .Include(x => x.Booking)
                 .Include(x => x.Location)
                 .Where(
                     x => location == null || 
@@ -36,7 +35,17 @@ namespace BookingTask.Services
 
         public async Task<int> Add(AddDeskDto deskDto)
         {
-            var desk = _mapper.Map<Desk>(deskDto);
+            var location = await _dbContext.Locations.FirstOrDefaultAsync(x => 
+                    x.Country == deskDto.Country &&
+                    x.City == deskDto.City &&
+                    x.Street == deskDto.Street);
+
+            if (location is null)
+            {
+                throw new NotFoundException("Wrong location");
+            }
+
+            var desk = new Desk() { IsAvailable = true, Location = location };
             await _dbContext.Desks.AddAsync(desk);
             await _dbContext.SaveChangesAsync();
             return desk.Id;
@@ -77,7 +86,7 @@ namespace BookingTask.Services
         {
             var desk = await _dbContext.Desks
                 .Include(x => x.Location)
-                .Include(x => x.Booking)
+                .Include(x => x.Bookings)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (desk is null)

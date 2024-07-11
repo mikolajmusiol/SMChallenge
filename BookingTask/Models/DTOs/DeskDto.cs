@@ -9,6 +9,5 @@ namespace BookingTask.Models.DTOs
         public string City { get; set; }
         public string Street { get; set; }
         public string IsAvailable { get; set; }
-        public DateTime? BookedDay { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using BookingTask.Services.Interfaces;
 using BookingTask.Utilities;
 using DeskBooking.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace BookingTask.Services
 {
@@ -59,7 +60,7 @@ namespace BookingTask.Services
                 throw new NotFoundException("Couldn't find");
 
 
-            if (!desk.IsAvailable && bookingDto.DaysOfReservation.Contains(desk.Booking.BookedDay))
+            if (!desk.IsAvailable || BookingsOverlap(desk.Bookings, bookingDto.DaysOfReservation))
                 throw new BadRequestException("This desk is already booked");
 
             desk.IsAvailable = false;
@@ -70,7 +71,7 @@ namespace BookingTask.Services
                 bookings.Add(booking);
                 await _dbContext.Bookings.AddAsync(booking);
             }
-
+            _dbContext.Desks.Update(desk);
             await _dbContext.SaveChangesAsync();
         }
 
@@ -88,6 +89,7 @@ namespace BookingTask.Services
             booking.Desk = desk;
 
             _dbContext.Bookings.Update(booking);
+            _dbContext.Desks.Update(desk);
             await _dbContext.SaveChangesAsync();
         }
 
@@ -95,7 +97,7 @@ namespace BookingTask.Services
         {
             var desk = await _dbContext.Desks
                 .Include(x => x.Location)
-                .Include(x => x.Booking)
+                .Include(x => x.Bookings)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (desk is null)
@@ -106,6 +108,18 @@ namespace BookingTask.Services
             {
                 return desk;
             }
+        }
+
+        private bool BookingsOverlap(List<Booking> list1, List<DateTime> list2)
+        {
+            foreach (var booking in list1)
+            {
+                if (list2.Contains(booking.BookedDay))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

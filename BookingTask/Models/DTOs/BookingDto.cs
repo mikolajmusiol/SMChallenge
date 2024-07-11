@@ -2,6 +2,7 @@
 {
     public class BookingDto
     {
+        public int BookingId { get; set; }
         public string UserName { get; set; }
         public DateTime BookedDay { get; set; }
         public int DeskId { get; set; }
