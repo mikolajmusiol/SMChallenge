@@ -5,6 +5,8 @@ VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingTask", "BookingTask.csproj", "{6F6870A5-5ADC-4D90-AC47-AC513334530B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingTask.UnitTests", "..\BookingTask.UnitTests\BookingTask.UnitTests.csproj", "{4989C33A-A6DB-4EC9-9F31-E23281FEA6DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{6F6870A5-5ADC-4D90-AC47-AC513334530B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F6870A5-5ADC-4D90-AC47-AC513334530B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F6870A5-5ADC-4D90-AC47-AC513334530B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4989C33A-A6DB-4EC9-9F31-E23281FEA6DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4989C33A-A6DB-4EC9-9F31-E23281FEA6DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4989C33A-A6DB-4EC9-9F31-E23281FEA6DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4989C33A-A6DB-4EC9-9F31-E23281FEA6DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
