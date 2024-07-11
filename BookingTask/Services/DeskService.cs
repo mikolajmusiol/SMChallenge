@@ -37,18 +37,23 @@ namespace BookingTask.Services
 
         public async Task<int> Add(AddDeskDto deskDto)
         {
-            var location = await _dbContext.Locations.FirstOrDefaultAsync(x => 
-                    x.Country == deskDto.Country &&
-                    x.City == deskDto.City &&
-                    x.Street == deskDto.Street);
+            var location = await _dbContext.Locations.FirstOrDefaultAsync(x => x.Id == deskDto.LocationId);
 
             if (location is null)
             {
-                _logger.LogError($"Wrong location: {deskDto.Country} {deskDto.City} {deskDto.Street}");
+                _logger.LogError($"Wrong location");
                 throw new NotFoundException("Wrong location");
             }
 
-            var desk = new Desk() { IsAvailable = true, Location = location };
+            var presentDesk = await _dbContext.Desks.AnyAsync(x => x.Name == deskDto.Name);
+            if (presentDesk)
+            {
+                var message = $"Desk Name not Unique: {deskDto.Name}";
+                _logger.LogError(message);
+                throw new NotFoundException(message);
+            }
+
+            var desk = new Desk() { Location = location, Name = deskDto.Name };
             await _dbContext.Desks.AddAsync(desk);
             await _dbContext.SaveChangesAsync();
             return desk.Id;

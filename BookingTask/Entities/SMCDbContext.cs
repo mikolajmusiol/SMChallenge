@@ -21,11 +21,6 @@ namespace DeskBooking.Entities
                 .HasMany(p => p.Bookings)
                 .WithOne(x => x.User);
 
-            //modelBuilder.Entity<Booking>()
-            //    .HasOne(x => x.Desk)
-            //    .WithOne(x => x.Booking)
-            //    .HasForeignKey<Desk>("BookingId");
-
             modelBuilder.Entity<Desk>()
                 .HasMany(x => x.Bookings)
                 .WithOne(x => x.Desk);

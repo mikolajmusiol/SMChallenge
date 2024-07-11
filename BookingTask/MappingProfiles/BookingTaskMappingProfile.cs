@@ -11,15 +11,16 @@ namespace DeskBooking.MappingProfiles
         {
             CreateMap<AddLocationDto, Location>();
 
-            CreateMap<Desk, DeskDto>()
-                .ForMember(p => p.Country, x => x.MapFrom(l => l.Location.Country))
-                .ForMember(p => p.City, x => x.MapFrom(l => l.Location.City))
-                .ForMember(p => p.Street, x => x.MapFrom(l => l.Location.Street));
+            CreateMap<Location, LocationDto>()
+                .ReverseMap();
+
+            CreateMap<Desk, DeskDto>();
 
             CreateMap<Booking, BookingDto>()
                 .ForMember(p => p.BookingId, x => x.MapFrom(l => l.Id))
                 .ForMember(p => p.UserName, x => x.MapFrom(l => l.User.Name))
                 .ForMember(p => p.DeskId, x => x.MapFrom(l => l.Desk.Id))
+                .ForMember(p => p.DeskName, x => x.MapFrom(l => l.Desk.Name))
                 .ForMember(p => p.BookedDay, x => x.MapFrom(l => l.BookedDay))
                 .ForMember(p => p.Country, x => x.MapFrom(l => l.Desk.Location.Country))
                 .ForMember(p => p.City, x => x.MapFrom(l => l.Desk.Location.City))
