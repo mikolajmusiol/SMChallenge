@@ -14,12 +14,15 @@ namespace BookingTask.Services
         private readonly SMCDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IUserContextService _userContextService;
+        private readonly ILogger<BookingService> _logger;
 
-        public BookingService(SMCDbContext dbContext, IMapper mapper, IUserContextService userContextService)
+        public BookingService(SMCDbContext dbContext, IMapper mapper, 
+            IUserContextService userContextService, ILogger<BookingService> logger)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _userContextService = userContextService;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<BookingDto>> GetBookings()
@@ -50,18 +53,32 @@ namespace BookingTask.Services
         public async Task Book(AddBookingDto bookingDto)
         {
             if (!DateTimeChecking.AreDatesWithinAWeek(bookingDto.DaysOfReservation))
+            {
+                _logger.LogWarning("Reservation can't exceed a week");
                 throw new BadRequestException("Reservation can't exceed a week");
+            }
 
             var bookings = new List<Booking>();
             var desk = await GetDeskById(bookingDto.DeskId);
             var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == _userContextService.GetUserId);
 
-            if (desk is null || user is null)
-                throw new NotFoundException("Couldn't find");
+            if (desk is null)
+            {
+                _logger.LogError($"Desk id:{desk.Id} not found");
+                throw new NotFoundException("Couldn't find desk");
+            }
+            else if (user is null)
+            {
+                _logger.LogError($"User with id:{_userContextService.GetUserId} not found");
+                throw new NotFoundException("Couldn't find desk");
+            }
 
 
             if (BookingsOverlap(desk.Bookings, bookingDto.DaysOfReservation))
+            {
+                _logger.LogError($"Desk id:{desk.Id} is already booked");
                 throw new BadRequestException("This desk is already booked");
+            }
 
             desk.IsAvailable = false;
 
@@ -83,7 +100,10 @@ namespace BookingTask.Services
                 .FirstOrDefaultAsync(x => x.Id == bookingId);
 
             if (DateTimeChecking.IsLessThan24HoursAway(DateTime.Now, booking.BookedDay))
+            {
+                _logger.LogError($"Couldn't change desk - less than 24h away");
                 throw new BadRequestException("Couldn't change the desk - the booked day is less than 24 hours away");
+            }
 
             booking.Desk.IsAvailable = true;
             booking.Desk = desk;
@@ -102,6 +122,7 @@ namespace BookingTask.Services
 
             if (desk is null)
             {
+                _logger.LogError($"Desk id:{id} not found");
                 throw new NotFoundException("Desk not found");
             }
             else

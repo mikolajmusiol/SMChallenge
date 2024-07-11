@@ -11,11 +11,13 @@ namespace BookingTask.Services
     {
         private readonly SMCDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly ILogger<DeskService> _logger;
 
-        public DeskService(SMCDbContext dbContext, IMapper mapper)
+        public DeskService(SMCDbContext dbContext, IMapper mapper, ILogger<DeskService> logger)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<DeskDto>> GetDesks(string? location)
@@ -42,6 +44,7 @@ namespace BookingTask.Services
 
             if (location is null)
             {
+                _logger.LogError($"Wrong location: {deskDto.Country} {deskDto.City} {deskDto.Street}");
                 throw new NotFoundException("Wrong location");
             }
 
@@ -62,6 +65,7 @@ namespace BookingTask.Services
             }
             else
             {
+                _logger.LogError($"Atempt of deletion of desk id: {desk.Id}");
                 throw new BadRequestException("Couldn't delete reserved desk");
             }
         }
@@ -78,6 +82,7 @@ namespace BookingTask.Services
             }
             else
             {
+                _logger.LogWarning($"Desk id:{id} is already unavailable");
                 throw new BadRequestException("This desk is already unavailable");
             }
         }
@@ -91,6 +96,7 @@ namespace BookingTask.Services
 
             if (desk is null)
             {
+                _logger.LogError($"Desk id:{id} not found");
                 throw new NotFoundException("Desk not found");
             }
             else
