@@ -57,6 +57,12 @@ namespace BookingTask.Services
                 _logger.LogWarning("Reservation can't exceed a week");
                 throw new BadRequestException("Reservation can't exceed a week");
             }
+            else if (bookingDto.DaysOfReservation.Min() < DateTime.Now)
+            {
+                string message = "Invalid date of reservation";
+                _logger.LogWarning(message);
+                throw new BadRequestException(message);
+            }
 
             var bookings = new List<Booking>();
             var desk = await GetDeskById(bookingDto.DeskId);
