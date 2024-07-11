@@ -1,4 +1,5 @@
 ﻿using BookingTask.Models.DTOs;
+using DeskBooking.Entities;
 
 namespace BookingTask.Services.Interfaces
 {
@@ -6,5 +7,6 @@ namespace BookingTask.Services.Interfaces
     {
         Task<int> Add(AddLocationDto locationDto);
         Task Delete(int id);
+        Task<List<Location>> GetLocations();
     }
 }

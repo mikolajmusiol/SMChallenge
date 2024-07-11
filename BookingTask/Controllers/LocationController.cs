@@ -33,5 +33,12 @@ namespace BookingTask.Controllers
             await _locationService.Delete(id);
             return NoContent();
         }
+
+        [HttpGet]
+        public async Task<ActionResult> GetLocations()
+        {
+            var locations = await _locationService.GetLocations();
+            return Ok(locations);
+        }
     }
 }

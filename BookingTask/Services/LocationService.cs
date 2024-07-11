@@ -35,5 +35,11 @@ namespace BookingTask.Services
                 await _dbContext.SaveChangesAsync();
             }
         }
+
+        public async Task<List<Location>> GetLocations()
+        {
+            var locations = await _dbContext.Locations.Include(x => x.Desks).ToListAsync();
+            return locations;
+        }
     }
 }
