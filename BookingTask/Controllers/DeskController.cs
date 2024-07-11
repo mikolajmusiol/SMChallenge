@@ -1,12 +1,14 @@
 ﻿using BookingTask.Models.DTOs;
 using BookingTask.Services;
 using BookingTask.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookingTask.Controllers
 {
     [Route("api/desks")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class DeskController : ControllerBase
     {
         private readonly IDeskService _deskService;
@@ -17,6 +19,7 @@ namespace BookingTask.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Employee")]
         public async Task<ActionResult<IEnumerable<DeskDto>>> GetDesks([FromQuery]string? location)
         {
             var desksDtos = await _deskService.GetDesks(location);

@@ -10,6 +10,7 @@ namespace BookingTask.Controllers
 {
     [Route("api/locations")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class LocationController : ControllerBase
     {
         private readonly ILocationService _locationService;

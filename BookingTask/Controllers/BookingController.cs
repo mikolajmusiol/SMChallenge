@@ -2,12 +2,14 @@
 using BookingTask.Models.DTOs;
 using BookingTask.Services;
 using BookingTask.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookingTask.Controllers
 {
     [Route("api/bookings")]
     [ApiController]
+    [Authorize(Roles = "Admin,Employee")]
     public class BookingController : ControllerBase
     {
         private readonly IBookingService _bookingService;
